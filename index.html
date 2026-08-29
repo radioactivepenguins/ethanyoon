@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ethan — Professional Statement</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0A0A0A;
+    --surface:#17150F;
+    --text:#EFEAE0;
+    --text-soft:#D8D2C2;
+    --muted:#9A9284;
+    --gold:#C9A227;
+    --gold-bright:#E4C55E;
+    --gold-soft: rgba(201,162,39,0.16);
+    --hairline: rgba(239,234,224,0.16);
+    --ruled: rgba(239,234,224,0.04);
+    --danger:#D9704F;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    background-image: repeating-linear-gradient(
+      to bottom,
+      transparent, transparent 27px,
+      var(--ruled) 27px, var(--ruled) 28px
+    );
+    color:var(--text);
+    font-family:'IBM Plex Sans', sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .page{
+    max-width:960px;
+    margin:0 auto;
+    padding:56px 20px 40px;
+    position:relative;
+  }
+  .toolbar{
+    position:fixed;
+    top:18px; right:18px;
+    z-index:50;
+    display:flex;
+    gap:8px;
+    align-items:center;
+  }
+  .edit-toggle, .save-now-btn{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    background:transparent;
+    color:var(--gold);
+    border:1px solid var(--gold);
+    border-radius:3px;
+    padding:9px 14px;
+    cursor:pointer;
+    transition:transform .15s ease, background .15s ease, color .15s ease;
+  }
+  .edit-toggle:hover, .save-now-btn:hover{ transform:translateY(-1px); background:var(--gold-soft); }
+  .edit-toggle.active{ background:var(--gold); color:var(--bg); }
+  .save-now-btn{ display:none; }
+  body.edit-on .save-now-btn{ display:inline-block; }
+  .save-pill{
+    position:fixed; top:64px; right:18px; z-index:50;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:10px; letter-spacing:0.06em; text-transform:uppercase;
+    color:var(--gold-bright);
+    background:rgba(10,10,10,0.92);
+    border:1px solid var(--hairline);
+    padding:9px 10px; border-radius:3px;
+    opacity:0; transition:opacity .3s ease;
+    pointer-events:none;
+    max-width:240px;
+    text-align:right;
+  }
+  .save-pill.show{ opacity:1; }
+  .save-pill.error{ color:var(--danger); border-color:var(--danger); }
+  .statement-head{ margin-bottom:34px; }
+  .eyebrow{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    letter-spacing:0.16em;
+    text-transform:uppercase;
+    color:var(--gold);
+    margin:0 0 10px;
+  }
+  .head-top{ display:flex; align-items:flex-end; gap:22px; }
+  .photo-wrap{
+    width:88px; height:88px; border-radius:4px;
+    border:1px solid var(--hairline);
+    background:var(--surface);
+    flex-shrink:0;
+    overflow:hidden;
+    position:relative;
+    cursor:default;
+  }
+  .photo-wrap.editable{ cursor:pointer; }
+  .photo-wrap img{ width:100%; height:100%; object-fit:cover; display:none; }
+  .photo-placeholder{
+    width:100%; height:100%;
+    display:flex; align-items:center; justify-content:center;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:9px; color:var(--muted); text-align:center; padding:6px;
+    letter-spacing:0.04em;
+  }
+  .head-text{ flex:1; min-width:0; }
+  h1{
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    font-size:42px;
+    line-height:1.02;
+    margin:0 0 6px;
+    letter-spacing:-0.01em;
+    color:var(--text);
+  }
+  .title-line{
+    font-size:15px;
+    color:var(--muted);
+    margin:0;
+    font-weight:500;
+  }
+  .meta-row{
+    display:flex; flex-wrap:wrap; gap:4px 18px;
+    margin-top:18px;
+    padding-top:14px;
+    border-top:1px solid var(--hairline);
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    color:var(--muted);
+    align-items:center;
+  }
+  .meta-row span[contenteditable]{ outline:none; }
+  .meta-sep{ color:var(--hairline); }
+  a.meta-link{ color:var(--muted); text-decoration:none; border-bottom:1px solid var(--hairline); }
+  a.meta-link:hover{ color:var(--gold-bright); border-bottom-color:var(--gold); }
+  .resume-btn{
+    margin-left:auto;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    letter-spacing:0.05em;
+    text-transform:uppercase;
+    color:var(--bg);
+    background:var(--gold);
+    border:1px solid var(--gold);
+    padding:6px 12px;
+    border-radius:3px;
+    text-decoration:none;
+    cursor:pointer;
+  }
+  .resume-btn.disabled{ opacity:0.4; background:transparent; color:var(--muted); }
+  body:not(.edit-on) .resume-btn.disabled{ pointer-events:none; }
+  .ledger-entry{
+    display:flex;
+    gap:18px;
+    padding:26px 0;
+    border-top:1px solid var(--hairline);
+  }
+  .entry-index{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    color:var(--gold);
+    padding-top:3px;
+    flex-shrink:0;
+    width:22px;
+  }
+  .entry-body{ flex:1; min-width:0; }
+  .entry-body h2{
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    font-size:15px;
+    letter-spacing:0.02em;
+    text-transform:uppercase;
+    margin:0 0 12px;
+    color:var(--text);
+  }
+  p.summary{ margin:0; line-height:1.65; font-size:14.5px; color:var(--text-soft); }
+  [contenteditable]:focus{
+    background:var(--gold-soft);
+    border-radius:2px;
+    outline:1px dashed var(--gold);
+  }
+  .item{
+    padding:14px 0;
+    border-bottom:1px dashed var(--hairline);
+    position:relative;
+  }
+  .item:last-child{ border-bottom:none; }
+  .item-head{
+    display:flex; justify-content:space-between; gap:12px; align-items:baseline; flex-wrap:wrap;
+  }
+  .item-subhead{
+    display:flex; justify-content:space-between; gap:12px; align-items:baseline; flex-wrap:wrap;
+    margin-top:3px;
+  }
+  .item-name-wrap{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+  .item-org{ font-weight:600; font-size:14.5px; color:var(--text); }
+  .item-meta{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px; color:var(--muted); white-space:nowrap;
+  }
+  .item-role{ font-size:13.5px; color:var(--muted); font-style:italic; }
+  ul.bullets{ margin:8px 0 0; padding-left:18px; }
+  ul.bullets li{ font-size:13.5px; line-height:1.55; margin-bottom:4px; color:var(--text-soft); }
+  body.edit-on ul.bullets li{ outline:none; }
+  .remove-item{
+    display:none;
+    position:absolute; right:0; top:12px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:10px; color:var(--danger); background:none; border:1px solid var(--danger);
+    padding:2px 7px; border-radius:3px; cursor:pointer;
+  }
+  body.edit-on .remove-item{ display:inline-block; }
+  .add-btn{
+    display:none;
+    margin-top:12px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px; letter-spacing:0.04em; text-transform:uppercase;
+    color:var(--gold); background:none; border:1px dashed var(--gold);
+    padding:7px 12px; border-radius:3px; cursor:pointer;
+  }
+  body.edit-on .add-btn{ display:inline-block; }
+  .add-bullet{
+    display:none;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:10px; color:var(--gold); background:none; border:none;
+    cursor:pointer; padding:2px 0; margin-top:4px;
+  }
+  body.edit-on .add-bullet{ display:inline-block; }
+  .position-block{ margin-top:10px; padding-top:10px; border-top:1px dotted var(--hairline); }
+  .position-block:first-child{ margin-top:0; padding-top:0; border-top:none; }
+  .remove-position{
+    display:none;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:10px; color:var(--danger); background:none; border:none;
+    cursor:pointer; padding:0 0 0 8px;
+  }
+  body.edit-on .remove-position{ display:inline-block; }
+  .add-position-btn{
+    display:none;
+    margin-top:10px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:10.5px; letter-spacing:0.03em; text-transform:uppercase;
+    color:var(--gold); background:none; border:1px dashed var(--gold);
+    padding:5px 10px; border-radius:3px; cursor:pointer;
+  }
+  body.edit-on .add-position-btn{ display:inline-block; }
+  .file-add-btn{
+    display:none;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:10px; color:var(--gold); background:none; border:1px dashed var(--gold);
+    padding:2px 8px; border-radius:3px; cursor:pointer;
+  }
+  body.edit-on .file-add-btn{ display:inline-block; }
+  .project-files{ margin-top:8px; }
+  .file-chip{
+    display:inline-flex; align-items:center; gap:6px;
+    background:var(--surface); border:1px solid var(--hairline);
+    color:var(--text-soft);
+    font-family:'IBM Plex Mono', monospace; font-size:11px;
+    padding:4px 9px; border-radius:3px; margin:0 6px 6px 0;
+  }
+  .file-chip a{ color:var(--gold-bright); text-decoration:none; cursor:pointer; }
+  .file-chip a:hover{ text-decoration:underline; }
+  .file-chip .rm{ display:none; color:var(--danger); cursor:pointer; }
+  body.edit-on .file-chip .rm{ display:inline; }
+  .tags{ display:flex; flex-wrap:wrap; gap:8px; }
+  .tag{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11.5px;
+    border:1px solid var(--hairline);
+    background:var(--surface);
+    padding:6px 11px;
+    border-radius:3px;
+    color:var(--text-soft);
+    position:relative;
+  }
+  .tag .rm{ display:none; margin-left:6px; color:var(--danger); cursor:pointer; }
+  body.edit-on .tag .rm{ display:inline; }
+  .ledger-footer{
+    margin-top:6px; padding-top:20px; border-top:1px solid var(--hairline);
+  }
+  .ticker{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    letter-spacing:0.04em;
+    color:var(--muted);
+    display:flex; flex-wrap:wrap; gap:0;
+    align-items:center;
+  }
+  .ticker span.tick{ padding:0 10px; border-right:1px solid var(--hairline); display:inline-flex; align-items:center; gap:6px; }
+  .ticker span.tick:last-child{ border-right:none; }
+  .ticker .tick-rm{ display:none; color:var(--danger); cursor:pointer; }
+  body.edit-on .ticker .tick-rm{ display:inline; }
+  .balance-line{
+    margin-top:14px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:10.5px;
+    color:var(--muted);
+    opacity:0.6;
+    text-align:right;
+  }
+  input.hidden-file{ display:none; }
+  @media (max-width:520px){
+    h1{ font-size:32px; }
+    .head-top{ align-items:flex-start; }
+    .resume-btn{ margin-left:0; }
+    .meta-row{ gap:6px 12px; }
+    .save-pill{ right:10px; max-width:170px; }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .edit-toggle, .save-now-btn{ transition:none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+  <button class="save-now-btn" id="saveNowBtn">Save now</button>
+  <button class="edit-toggle" id="editToggle">Edit</button>
+</div>
+<div class="save-pill" id="savePill">Saved</div>
+
+<div class="page">
+
+  <header class="statement-head">
+    <p class="eyebrow" contenteditable="false" data-path="labels.eyebrow"></p>
+    <div class="head-top">
+      <div class="photo-wrap" id="photoWrap">
+        <img id="photoImg" alt="Portrait">
+        <div class="photo-placeholder" id="photoPlaceholder">Add<br>photo</div>
+      </div>
+      <div class="head-text">
+        <h1 id="nameField" contenteditable="false" data-path="name"></h1>
+        <p class="title-line" id="titleField" contenteditable="false" data-path="title"></p>
+      </div>
+    </div>
+    <div class="meta-row">
+      <span contenteditable="false" data-path="location"></span>
+      <span class="meta-sep">·</span>
+      <a id="emailLink" class="meta-link" href="#"><span contenteditable="false" data-path="email"></span></a>
+      <span class="meta-sep">·</span>
+      <a id="phoneLink" class="meta-link" href="#"><span contenteditable="false" data-path="phone"></span></a>
+      <span class="meta-sep">·</span>
+      <a id="linkedinLink" class="meta-link" href="#" target="_blank" rel="noopener"><span contenteditable="false" data-path="linkedin"></span></a>
+      <a class="resume-btn disabled" id="resumeBtn">Résumé ↓</a>
+      <input type="file" id="resumeUpload" class="hidden-file" accept="application/pdf">
+    </div>
+  </header>
+
+  <section class="ledger-entry">
+    <div class="entry-index">01</div>
+    <div class="entry-body">
+      <h2 contenteditable="false" data-path="labels.profile"></h2>
+      <p class="summary" id="summaryField" contenteditable="false" data-path="summary"></p>
+    </div>
+  </section>
+
+  <section class="ledger-entry">
+    <div class="entry-index">02</div>
+    <div class="entry-body">
+      <h2 contenteditable="false" data-path="labels.education"></h2>
+      <div id="educationList"></div>
+      <button class="add-btn" id="addEducation">+ Add credential</button>
+    </div>
+  </section>
+
+  <section class="ledger-entry">
+    <div class="entry-index">03</div>
+    <div class="entry-body">
+      <h2 contenteditable="false" data-path="labels.experience"></h2>
+      <div id="experienceList"></div>
+      <button class="add-btn" id="addExperience">+ Add position</button>
+    </div>
+  </section>
+
+  <section class="ledger-entry">
+    <div class="entry-index">04</div>
+    <div class="entry-body">
+      <h2 contenteditable="false" data-path="labels.involvement"></h2>
+      <div id="involvementList"></div>
+      <button class="add-btn" id="addInvolvement">+ Add involvement</button>
+    </div>
+  </section>
+
+  <section class="ledger-entry">
+    <div class="entry-index">05</div>
+    <div class="entry-body">
+      <h2 contenteditable="false" data-path="labels.projects"></h2>
+      <div id="projectsList"></div>
+      <button class="add-btn" id="addProject">+ Add project</button>
+    </div>
+  </section>
+
+  <section class="ledger-entry">
+    <div class="entry-index">06</div>
+    <div class="entry-body">
+      <h2 contenteditable="false" data-path="labels.focus"></h2>
+      <div class="tags" id="focusTags"></div>
+      <button class="add-btn" id="addFocus">+ Add area</button>
+    </div>
+  </section>
+
+  <footer class="ledger-footer">
+    <div class="ticker" id="tickerLine"></div>
+    <button class="add-btn" id="addTickerTag" style="margin-top:10px;">+ Add ticker tag</button>
+    <div class="balance-line" contenteditable="false" data-path="labels.footer"></div>
+  </footer>
+
+</div>
+
+<input type="file" id="photoUpload" class="hidden-file" accept="image/*">
+<input type="file" id="projectFileUpload" class="hidden-file">
+
+<script>
+(function(){
+
+  // This page saves entirely to this browser's local storage, tied to this exact file.
+  // No Claude, no network, no account — it works offline. Chrome and Firefox persist this
+  // reliably for local files; Safari can treat each local open as a fresh session, so use
+  // Chrome or Firefox if you want edits to stick between visits.
+
+  const STORAGE_KEY = 'ethan_portfolio_content_v1';
+  const FILE_KEY_PREFIX = 'ethan_portfolio_file_v1_';
+  const MAX_FILE_BYTES = 3 * 1024 * 1024; // local storage quotas are small (often ~5-10MB total) — keep files modest
+
+  const DEFAULT = {
+    name: "Ethan",
+    title: "Finance & Accountancy — Gies College of Business, University of Illinois Urbana-Champaign",
+    location: "Cleveland, OH",
+    email: "your.email@example.com",
+    phone: "(000) 000-0000",
+    linkedin: "linkedin.com/in/your-handle",
+    summary: "Finance & Accountancy student in the James Scholars Honors Program and Stanley C. Golder Academies at Gies College of Business, currently applying data and analytics work to real operating problems as an intern with Genpact's Digital, Technology, Analytics & Insights group, on-site at Eaton Corporation. Interested in the intersection of financial rigor and analytical tooling — from model governance to corporate strategy.",
+    education: [
+      {
+        org: "University of Illinois Urbana-Champaign — Gies College of Business",
+        location: "Urbana-Champaign, IL",
+        role: "B.S., Finance & Accountancy · James Scholars Honors · Stanley C. Golder Academies",
+        dates: "Exp. Dec 2026 / May 2027",
+        bullets: ["GPA 3.59"]
+      }
+    ],
+    experience: [
+      {
+        org: "Genpact — DTAI Group, on-site at Eaton Corporation",
+        location: "Cleveland, OH",
+        role: "Intern",
+        dates: "Add dates",
+        bullets: [
+          "Built a Power BI dashboard analyzing case duration data to surface process bottlenecks for stakeholder review.",
+          "Add another line about scope, tools, or an outcome here."
+        ]
+      }
+    ],
+    projects: [
+      {
+        name: "Project Name",
+        dates: "Dates",
+        files: [],
+        bullets: [
+          "Describe the goal or context.",
+          "Describe your approach or tools used.",
+          "Describe the outcome or result."
+        ]
+      }
+    ],
+    involvement: [
+      {
+        org: "Organization Name",
+        location: "UIUC",
+        positions: [
+          { role: "Role / Position", dates: "Dates", bullets: ["Describe your role or a notable contribution."] }
+        ]
+      }
+    ],
+    focus: ["Corporate Strategy", "Investment Banking", "Model Risk & Governance", "Venture Capital", "Data Analytics"],
+    tickerTags: ["Genpact × Eaton", "UIUC Gies '26/'27"],
+    labels: {
+      eyebrow: "Professional Statement",
+      profile: "Profile",
+      education: "Education",
+      experience: "Experience",
+      involvement: "On-Campus Involvement",
+      projects: "Projects",
+      focus: "Areas of Focus",
+      footer: "Saved locally to this browser."
+    },
+    photo: null,
+    resumeFile: null
+  };
+
+  let state = JSON.parse(JSON.stringify(DEFAULT));
+  let editing = false;
+  let pendingProjectFileIdx = null;
+
+  function getPath(obj, path){
+    return path.split('.').reduce((o,k)=> (o==null?undefined:o[k]), obj);
+  }
+  function setPath(obj, path, value){
+    const keys = path.split('.');
+    let cur = obj;
+    for(let i=0;i<keys.length-1;i++){ cur = cur[keys[i]]; }
+    cur[keys[keys.length-1]] = value;
+  }
+  function makeFileKey(){
+    return FILE_KEY_PREFIX + Date.now() + '_' + Math.random().toString(36).slice(2,8);
+  }
+
+  function loadState(){
+    try{
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if(raw){
+        const parsed = JSON.parse(raw);
+        state = Object.assign(JSON.parse(JSON.stringify(DEFAULT)), parsed);
+        state.labels = Object.assign({}, DEFAULT.labels, parsed.labels || {});
+        state.involvement = (state.involvement || []).map(item=>{
+          if(item.positions) return item;
+          return {
+            org: item.org || '',
+            location: item.location || '',
+            positions: [{ role: item.role || '', dates: item.dates || '', bullets: item.bullets || [] }]
+          };
+        });
+      }
+    }catch(e){
+      console.error('Could not load saved content, starting fresh.', e);
+    }
+    render();
+  }
+
+  function saveState(){
+    try{
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      flashSaved(true);
+      return true;
+    }catch(e){
+      console.error('Save failed', e);
+      const msg = (e && e.name === 'QuotaExceededError')
+        ? 'Storage full — remove a file or shorten text.'
+        : 'Not saved — see browser console for details.';
+      flashSaved(false, msg);
+      return false;
+    }
+  }
+
+  function flashSaved(success, message){
+    const pill = document.getElementById('savePill');
+    pill.classList.toggle('error', !success);
+    pill.textContent = success ? 'Saved' : (message || 'Not saved');
+    pill.classList.add('show');
+    clearTimeout(pill._t);
+    pill._t = setTimeout(()=> pill.classList.remove('show'), success ? 1200 : 5000);
+  }
+
+  function updateLinkHrefs(){
+    const emailLink = document.getElementById('emailLink');
+    const emailVal = (state.email || '').trim();
+    emailLink.href = emailVal.includes('@') ? ('mailto:' + emailVal) : '#';
+
+    const phoneLink = document.getElementById('phoneLink');
+    const phoneRaw = (state.phone || '').trim();
+    const hasPlus = phoneRaw.startsWith('+');
+    const digits = phoneRaw.replace(/[^0-9]/g, '');
+    phoneLink.href = digits ? ('tel:' + (hasPlus ? '+' : '') + digits) : '#';
+
+    const linkedinLink = document.getElementById('linkedinLink');
+    let liVal = (state.linkedin || '').trim();
+    if(liVal){
+      if(!/^https?:\/\//i.test(liVal)) liVal = 'https://' + liVal;
+      linkedinLink.href = liVal;
+    } else {
+      linkedinLink.href = '#';
+    }
+  }
+
+  function downloadStoredFile(key, name){
+    try{
+      const dataUrl = localStorage.getItem(key);
+      if(!dataUrl){ alert('This file could not be found in local storage.'); return; }
+      const a = document.createElement('a');
+      a.href = dataUrl;
+      a.download = name || 'file';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    }catch(e){
+      alert('Could not load this file right now.');
+    }
+  }
+
+  function render(){
+    document.querySelectorAll('[data-path]').forEach(el=>{
+      const path = el.getAttribute('data-path');
+      const val = getPath(state, path);
+      el.textContent = val || '';
+    });
+
+    updateLinkHrefs();
+
+    const img = document.getElementById('photoImg');
+    const ph = document.getElementById('photoPlaceholder');
+    if(state.photo){
+      img.src = state.photo;
+      img.style.display = 'block';
+      ph.style.display = 'none';
+    } else {
+      img.style.display = 'none';
+      ph.style.display = 'flex';
+    }
+
+    const resumeBtn = document.getElementById('resumeBtn');
+    if(state.resumeFile){
+      resumeBtn.setAttribute('data-file-key', state.resumeFile.key);
+      resumeBtn.setAttribute('data-file-name', state.resumeFile.name || 'resume.pdf');
+      resumeBtn.classList.remove('disabled');
+      resumeBtn.textContent = 'Résumé ↓';
+    } else {
+      resumeBtn.removeAttribute('data-file-key');
+      resumeBtn.removeAttribute('data-file-name');
+      resumeBtn.classList.add('disabled');
+      resumeBtn.textContent = editing ? 'Upload résumé' : 'Résumé unavailable';
+    }
+
+    renderList('educationList', 'education');
+    renderList('experienceList', 'experience');
+    renderInvolvement();
+    renderProjects();
+    renderFocus();
+    renderTicker();
+    applyEditability();
+  }
+
+  function renderList(containerId, key){
+    const container = document.getElementById(containerId);
+    container.innerHTML = '';
+    state[key].forEach((item, idx)=>{
+      const div = document.createElement('div');
+      div.className = 'item';
+      div.innerHTML = `
+        <button class="remove-item" data-list="${key}" data-idx="${idx}" title="Remove">Remove</button>
+        <div class="item-head">
+          <span class="item-org" contenteditable="false" data-list-path="${key}.${idx}.org"></span>
+          <span class="item-meta" contenteditable="false" data-list-path="${key}.${idx}.location"></span>
+        </div>
+        <div class="item-subhead">
+          <span class="item-role" contenteditable="false" data-list-path="${key}.${idx}.role"></span>
+          <span class="item-meta" contenteditable="false" data-list-path="${key}.${idx}.dates"></span>
+        </div>
+        <ul class="bullets" data-bullets="${key}.${idx}"></ul>
+        <button class="add-bullet" data-add-bullet="${key}.${idx}">+ add line</button>
+      `;
+      div.querySelector(`[data-list-path="${key}.${idx}.org"]`).textContent = item.org || '';
+      div.querySelector(`[data-list-path="${key}.${idx}.location"]`).textContent = item.location || '';
+      div.querySelector(`[data-list-path="${key}.${idx}.role"]`).textContent = item.role || '';
+      div.querySelector(`[data-list-path="${key}.${idx}.dates"]`).textContent = item.dates || '';
+      const ul = div.querySelector('ul.bullets');
+      (item.bullets||[]).forEach((b, bi)=>{
+        const li = document.createElement('li');
+        li.contentEditable = 'false';
+        li.textContent = b;
+        li.setAttribute('data-bullet-path', `${key}.${idx}.bullets.${bi}`);
+        ul.appendChild(li);
+      });
+      container.appendChild(div);
+    });
+  }
+
+  function renderInvolvement(){
+    const container = document.getElementById('involvementList');
+    container.innerHTML = '';
+    state.involvement.forEach((item, idx)=>{
+      const div = document.createElement('div');
+      div.className = 'item';
+      const positionsHtml = (item.positions||[]).map((pos, pi)=> `
+        <div class="position-block">
+          <div class="item-subhead">
+            <span class="item-role" contenteditable="false" data-list-path="involvement.${idx}.positions.${pi}.role"></span>
+            <span>
+              <span class="item-meta" contenteditable="false" data-list-path="involvement.${idx}.positions.${pi}.dates"></span>
+              <button class="remove-position" data-rm-position="${idx}:${pi}" title="Remove this role">remove role</button>
+            </span>
+          </div>
+          <ul class="bullets" data-bullets="involvement.${idx}.positions.${pi}"></ul>
+          <button class="add-bullet" data-add-bullet="involvement.${idx}.positions.${pi}">+ add line</button>
+        </div>
+      `).join('');
+      div.innerHTML = `
+        <button class="remove-item" data-list="involvement" data-idx="${idx}" title="Remove">Remove</button>
+        <div class="item-head">
+          <span class="item-org" contenteditable="false" data-list-path="involvement.${idx}.org"></span>
+          <span class="item-meta" contenteditable="false" data-list-path="involvement.${idx}.location"></span>
+        </div>
+        ${positionsHtml}
+        <button class="add-position-btn" data-add-position="${idx}">+ Add role (promotion)</button>
+      `;
+      div.querySelector(`[data-list-path="involvement.${idx}.org"]`).textContent = item.org || '';
+      div.querySelector(`[data-list-path="involvement.${idx}.location"]`).textContent = item.location || '';
+      (item.positions||[]).forEach((pos, pi)=>{
+        div.querySelector(`[data-list-path="involvement.${idx}.positions.${pi}.role"]`).textContent = pos.role || '';
+        div.querySelector(`[data-list-path="involvement.${idx}.positions.${pi}.dates"]`).textContent = pos.dates || '';
+        const rmBtn = div.querySelector(`[data-rm-position="${idx}:${pi}"]`);
+        if(rmBtn && (item.positions||[]).length < 2) rmBtn.style.display = 'none';
+        const ul = div.querySelector(`[data-bullets="involvement.${idx}.positions.${pi}"]`);
+        (pos.bullets||[]).forEach((b, bi)=>{
+          const li = document.createElement('li');
+          li.contentEditable = 'false';
+          li.textContent = b;
+          li.setAttribute('data-bullet-path', `involvement.${idx}.positions.${pi}.bullets.${bi}`);
+          ul.appendChild(li);
+        });
+      });
+      container.appendChild(div);
+    });
+  }
+
+  function renderProjects(){
+    const container = document.getElementById('projectsList');
+    container.innerHTML = '';
+    state.projects.forEach((item, idx)=>{
+      const div = document.createElement('div');
+      div.className = 'item';
+      div.innerHTML = `
+        <button class="remove-item" data-list="projects" data-idx="${idx}" title="Remove">Remove</button>
+        <div class="item-head">
+          <div class="item-name-wrap">
+            <span class="item-org" contenteditable="false" data-list-path="projects.${idx}.name"></span>
+            <button class="file-add-btn" data-project-file="${idx}" title="Attach a file">+ file</button>
+          </div>
+          <span class="item-meta" contenteditable="false" data-list-path="projects.${idx}.dates"></span>
+        </div>
+        <div class="project-files"></div>
+        <ul class="bullets" data-bullets="projects.${idx}"></ul>
+        <button class="add-bullet" data-add-bullet="projects.${idx}">+ add line</button>
+      `;
+      div.querySelector(`[data-list-path="projects.${idx}.name"]`).textContent = item.name || '';
+      div.querySelector(`[data-list-path="projects.${idx}.dates"]`).textContent = item.dates || '';
+      const filesWrap = div.querySelector('.project-files');
+      (item.files||[]).forEach((f, fi)=>{
+        const chip = document.createElement('span');
+        chip.className = 'file-chip';
+        chip.innerHTML = `<a data-file-key="${f.key}" data-file-name="${f.name}">${f.name}</a><span class="rm" data-rm-file="${idx}:${fi}">×</span>`;
+        filesWrap.appendChild(chip);
+      });
+      const ul = div.querySelector('ul.bullets');
+      (item.bullets||[]).forEach((b, bi)=>{
+        const li = document.createElement('li');
+        li.contentEditable = 'false';
+        li.textContent = b;
+        li.setAttribute('data-bullet-path', `projects.${idx}.bullets.${bi}`);
+        ul.appendChild(li);
+      });
+      container.appendChild(div);
+    });
+  }
+
+  function renderFocus(){
+    const wrap = document.getElementById('focusTags');
+    wrap.innerHTML = '';
+    state.focus.forEach((tag, idx)=>{
+      const span = document.createElement('span');
+      span.className = 'tag';
+      span.innerHTML = `<span contenteditable="false" data-focus-idx="${idx}">${tag}</span><span class="rm" data-rm-focus="${idx}">×</span>`;
+      wrap.appendChild(span);
+    });
+  }
+
+  function renderTicker(){
+    const t = document.getElementById('tickerLine');
+    t.innerHTML = '';
+    if(state.location){
+      const span = document.createElement('span');
+      span.className = 'tick';
+      span.textContent = state.location;
+      t.appendChild(span);
+    }
+    state.tickerTags.forEach((tag, idx)=>{
+      const span = document.createElement('span');
+      span.className = 'tick';
+      span.innerHTML = `<span contenteditable="false" data-ticker-idx="${idx}"></span><span class="tick-rm" data-rm-ticker="${idx}">×</span>`;
+      span.querySelector('[data-ticker-idx]').textContent = tag;
+      t.appendChild(span);
+    });
+  }
+
+  function applyEditability(){
+    document.querySelectorAll('[data-path]').forEach(el=> el.contentEditable = editing ? 'true':'false');
+    document.querySelectorAll('[data-list-path]').forEach(el=> el.contentEditable = editing ? 'true':'false');
+    document.querySelectorAll('[data-bullet-path]').forEach(el=> el.contentEditable = editing ? 'true':'false');
+    document.querySelectorAll('[data-focus-idx]').forEach(el=> el.contentEditable = editing ? 'true':'false');
+    document.querySelectorAll('[data-ticker-idx]').forEach(el=> el.contentEditable = editing ? 'true':'false');
+    document.getElementById('photoWrap').classList.toggle('editable', editing);
+    document.getElementById('editToggle').classList.toggle('active', editing);
+    document.getElementById('editToggle').textContent = editing ? 'Done editing' : 'Edit';
+    document.body.classList.toggle('edit-on', editing);
+  }
+
+  document.addEventListener('input', (e)=>{
+    if(!editing) return;
+    const el = e.target;
+    if(el.hasAttribute('data-path')){
+      setPath(state, el.getAttribute('data-path'), el.textContent);
+      if(el.getAttribute('data-path') === 'email' || el.getAttribute('data-path') === 'linkedin' || el.getAttribute('data-path') === 'phone'){
+        updateLinkHrefs();
+      }
+      saveState();
+    } else if(el.hasAttribute('data-list-path')){
+      setPath(state, el.getAttribute('data-list-path'), el.textContent);
+      saveState();
+    } else if(el.hasAttribute('data-bullet-path')){
+      setPath(state, el.getAttribute('data-bullet-path'), el.textContent);
+      saveState();
+    } else if(el.hasAttribute('data-focus-idx')){
+      state.focus[parseInt(el.getAttribute('data-focus-idx'))] = el.textContent;
+      saveState();
+    } else if(el.hasAttribute('data-ticker-idx')){
+      state.tickerTags[parseInt(el.getAttribute('data-ticker-idx'))] = el.textContent;
+      saveState();
+    }
+  });
+
+  document.addEventListener('click', (e)=>{
+    const fileTrigger = e.target.closest('[data-file-key]');
+    if(fileTrigger){
+      e.preventDefault();
+      downloadStoredFile(fileTrigger.getAttribute('data-file-key'), fileTrigger.getAttribute('data-file-name'));
+      return;
+    }
+
+    if(editing && (e.target.closest('#emailLink') || e.target.closest('#linkedinLink') || e.target.closest('#phoneLink'))){
+      e.preventDefault();
+    }
+    if(e.target.id === 'editToggle'){
+      editing = !editing;
+      if(!editing) saveState();
+      applyEditability();
+      return;
+    }
+    if(e.target.id === 'saveNowBtn'){
+      saveState();
+      return;
+    }
+    if(!editing) return;
+
+    if(e.target.id === 'photoWrap' || e.target.closest('#photoWrap')){
+      document.getElementById('photoUpload').click();
+    }
+    if(e.target.id === 'resumeBtn' && !state.resumeFile){
+      document.getElementById('resumeUpload').click();
+    }
+    if(e.target.id === 'addExperience'){
+      state.experience.push({org:'New Position', location:'Location', role:'Role', dates:'Dates', bullets:['Describe scope and impact.']});
+      render(); saveState();
+    }
+    if(e.target.id === 'addInvolvement'){
+      state.involvement.push({org:'Organization Name', location:'UIUC', positions:[{role:'Role / Position', dates:'Dates', bullets:['Describe your role or a notable contribution.']}]});
+      render(); saveState();
+    }
+    if(e.target.hasAttribute('data-add-position')){
+      const idx = parseInt(e.target.getAttribute('data-add-position'));
+      state.involvement[idx].positions.push({role:'New Role', dates:'Dates', bullets:['Describe your role or a notable contribution.']});
+      render(); saveState();
+    }
+    if(e.target.hasAttribute('data-rm-position')){
+      const [idx, pi] = e.target.getAttribute('data-rm-position').split(':').map(Number);
+      if(state.involvement[idx].positions.length > 1){
+        state.involvement[idx].positions.splice(pi,1);
+        render(); saveState();
+      }
+    }
+    if(e.target.id === 'addEducation'){
+      state.education.push({org:'School Name', location:'Location', role:'Program / Degree', dates:'Dates', bullets:[]});
+      render(); saveState();
+    }
+    if(e.target.id === 'addProject'){
+      state.projects.push({name:'New Project', dates:'Dates', files:[], bullets:['Line one.','Line two.','Line three.']});
+      render(); saveState();
+    }
+    if(e.target.id === 'addFocus'){
+      state.focus.push('New Area');
+      render(); saveState();
+    }
+    if(e.target.id === 'addTickerTag'){
+      state.tickerTags.push('New tag');
+      render(); saveState();
+    }
+    if(e.target.hasAttribute('data-project-file')){
+      pendingProjectFileIdx = parseInt(e.target.getAttribute('data-project-file'));
+      document.getElementById('projectFileUpload').click();
+    }
+    if(e.target.hasAttribute('data-list')){
+      const key = e.target.getAttribute('data-list');
+      const idx = parseInt(e.target.getAttribute('data-idx'));
+      if(key === 'projects'){
+        (state.projects[idx].files||[]).forEach(f=>{ try{ localStorage.removeItem(f.key); }catch(e){} });
+      }
+      state[key].splice(idx,1);
+      render(); saveState();
+    }
+    if(e.target.hasAttribute('data-rm-focus')){
+      const idx = parseInt(e.target.getAttribute('data-rm-focus'));
+      state.focus.splice(idx,1);
+      render(); saveState();
+    }
+    if(e.target.hasAttribute('data-rm-ticker')){
+      const idx = parseInt(e.target.getAttribute('data-rm-ticker'));
+      state.tickerTags.splice(idx,1);
+      render(); saveState();
+    }
+    if(e.target.hasAttribute('data-rm-file')){
+      const [pIdx, fIdx] = e.target.getAttribute('data-rm-file').split(':').map(Number);
+      const removed = state.projects[pIdx].files.splice(fIdx,1);
+      if(removed[0]){ try{ localStorage.removeItem(removed[0].key); }catch(e){} }
+      render(); saveState();
+    }
+    if(e.target.hasAttribute('data-add-bullet')){
+      const raw = e.target.getAttribute('data-add-bullet');
+      const path = raw + '.bullets';
+      const arr = getPath(state, path);
+      arr.push('New line — describe scope, tools, or an outcome.');
+      render(); saveState();
+    }
+  });
+
+  document.getElementById('photoUpload').addEventListener('change', (e)=>{
+    const file = e.target.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = function(ev){
+      const img = new Image();
+      img.onload = function(){
+        const canvas = document.createElement('canvas');
+        const maxW = 400;
+        const scale = Math.min(1, maxW / img.width);
+        canvas.width = img.width * scale;
+        canvas.height = img.height * scale;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        state.photo = canvas.toDataURL('image/jpeg', 0.85);
+        render(); saveState();
+      };
+      img.src = ev.target.result;
+    };
+    reader.readAsDataURL(file);
+    e.target.value = '';
+  });
+
+  document.getElementById('resumeUpload').addEventListener('change', (e)=>{
+    const file = e.target.files[0];
+    if(!file) return;
+    if(file.size > MAX_FILE_BYTES){ alert('Please use a résumé PDF under about 3MB.'); e.target.value=''; return; }
+    const reader = new FileReader();
+    reader.onload = function(ev){
+      const key = makeFileKey();
+      try{
+        localStorage.setItem(key, ev.target.result);
+      }catch(err){
+        alert('Could not save that file — local storage may be full. Try a smaller PDF.');
+        e.target.value = '';
+        return;
+      }
+      const oldKey = state.resumeFile ? state.resumeFile.key : null;
+      state.resumeFile = { name: file.name, key: key };
+      render(); saveState();
+      if(oldKey){ try{ localStorage.removeItem(oldKey); }catch(e){} }
+    };
+    reader.readAsDataURL(file);
+    e.target.value = '';
+  });
+
+  document.getElementById('projectFileUpload').addEventListener('change', (e)=>{
+    const file = e.target.files[0];
+    if(!file || pendingProjectFileIdx === null) return;
+    if(file.size > MAX_FILE_BYTES){ alert('Please use a file under about 3MB.'); e.target.value=''; pendingProjectFileIdx = null; return; }
+    const reader = new FileReader();
+    reader.onload = function(ev){
+      const key = makeFileKey();
+      try{
+        localStorage.setItem(key, ev.target.result);
+      }catch(err){
+        alert('Could not save that file — local storage may be full. Try a smaller file.');
+        e.target.value = '';
+        pendingProjectFileIdx = null;
+        return;
+      }
+      state.projects[pendingProjectFileIdx].files.push({ name: file.name, key: key });
+      render(); saveState();
+      pendingProjectFileIdx = null;
+    };
+    reader.readAsDataURL(file);
+    e.target.value = '';
+  });
+
+  loadState();
+})();
+</script>
+
+</body>
+</html>
